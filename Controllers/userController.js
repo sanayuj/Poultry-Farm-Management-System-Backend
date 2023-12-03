@@ -1,8 +1,12 @@
+const {json,response} = require("express");
+
+
+
 module.exports.signup=async(req,res,next)=>{
-    const { username, email, password, phonenumber, confirmPassword } = req.body;
+    const { firstname,phoneNumber, email, password, conformPassword } = req.body;
     try{
-        console.log("Server called>>>>>>>>>")
+       
     }catch(error){
-        console.error(error)
+        res.json(error)
     }
 }

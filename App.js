@@ -4,20 +4,21 @@ require("dotenv").config();
 const dbConnection = require("./Config/dbConnection");
 const cors = require("cors");
 const logger = require("morgan");
+const bodyParser = require('body-parser');
+const userRouters = require("./Routes/userRoutes");
+
 
 //DATABASE
 dbConnection.dbConnect();
 
 //CORS
 app.use(
-  cors({
-    origin: process.env.ORIGIN,
-    method: ["GET", "POST"],
-    credentials: true,
-  })
+  cors()
 );
 
 app.use(logger("dev"));
+app.use(express.json());
+app.use("/",userRouters);
 
 app.listen(process.env.PORT, () => {
   console.log(`Sever started at port ${process.env.PORT}`);

@@ -1,7 +1,7 @@
 const mongoose=require('mongoose')
 const bcrypt=require('bcrypt')
 const userSchema=new mongoose.Schema({
-    username:{
+    userName:{
         type:String,
         required:true
     },
@@ -18,7 +18,7 @@ const userSchema=new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    phonenumber:{
+    phoneNumber:{
         type:Number,
         required:true
     },

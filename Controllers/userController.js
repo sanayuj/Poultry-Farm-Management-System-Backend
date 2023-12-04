@@ -57,7 +57,7 @@ module.exports.login=async (req,res,next)=>{
         const auth=await bcrypt.compare(password,customer.password)
         if(auth){
             const token= createToken(customer._id)
-         return res.status(200).json({message:"authenticate successfully",created:true,token})
+         return res.status(200).json({user:customer,message:"authenticate successfully",created:true,token})
         }else{
           return res.json({message:"Incorrect Password",created:false}) 
         }

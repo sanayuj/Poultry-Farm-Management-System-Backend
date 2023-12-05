@@ -6,7 +6,7 @@ const cors = require("cors");
 const logger = require("morgan");
 const bodyParser = require('body-parser');
 const userRouters = require("./Routes/userRoutes");
-
+const AdminRoutes=require("./Routes/adminRoutes")
 
 //DATABASE
 dbConnection.dbConnect();
@@ -18,7 +18,9 @@ app.use(
 
 app.use(logger("dev"));
 app.use(express.json());
+
 app.use("/",userRouters);
+ app.use("/admin",AdminRoutes );
 
 app.listen(process.env.PORT, () => {
   console.log(`Sever started at port ${process.env.PORT}`);

@@ -70,3 +70,15 @@ module.exports.login=async (req,res,next)=>{
         return res.json({error,created:false})
     }
 }
+
+
+
+module.exports.userHeader=async(req,res,next)=>{
+  try{
+  const userDetails=req.user
+  return res.json({status:true,user:userDetails})
+  }catch(error){
+    console.log(error)
+    return res.json({message:"Internal server error",status:false})
+  }
+}

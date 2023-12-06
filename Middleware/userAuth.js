@@ -1,10 +1,12 @@
 const jwt = require("jsonwebtoken");
-const user = require("../Model/userModel");
+const userModel = require("../Model/userModel");
 
 module.exports = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authentication;
+    const authHeader = req.headers.authorization;
+    console.log(authHeader,"MIddleware ONE")
     const authToken = authHeader && authHeader.split(" ")[1];
+    console.log(authToken,"MIddleware TWO")
     if (!authToken)
       return res.json({
         loginfail: true,
@@ -13,7 +15,7 @@ module.exports = async (req, res, next) => {
       });
     const decode = jwt.verify(authToken, "JWT");
 
-    const user = await user.findOne({ _id: decode.id });
+    const user = await userModel.findOne({ _id: decode.id });
     if (!user) {
       return res.json({
         message: "Unauthorized access",

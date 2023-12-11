@@ -1,5 +1,5 @@
 const express=require("express")
-const {signup,login, userHeader,addFarm,showUserFarms} =require('../Controllers/userController')
+const {signup,login, userHeader,addFarm,showUserFarms,addFeed} =require('../Controllers/userController')
 const router=express.Router()
 const cors = require('cors');
 const userAuth=require("../Middleware/userAuth")
@@ -8,6 +8,8 @@ const userAuth=require("../Middleware/userAuth")
 router.post('/signup', signup);
 router.post('/login',login)
 router.post('/addfarm/:userId',addFarm)
+router.post('/addfeed/:userId',addFeed)
+
 
 
 

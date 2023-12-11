@@ -164,3 +164,14 @@ module.exports.showUserFarms = async (req, res, next) => {
     });
   }
 };
+
+
+module.exports.addFeed=async(req,res,next)=>{
+try{
+
+
+}catch(error){
+console.log(error)
+return res.json({message:"Internal server error in adding feed data",status:false})
+}
+}

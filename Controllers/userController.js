@@ -150,8 +150,12 @@ module.exports.showUserFarms = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     console.log(userId, "PARAMS ID");
-    const existingFarm = await farm.findOne({ userId: userId });
-    console.log(existingFarm);
+    const existingFarm = await farm.find({ userId: userId });
+    if(existingFarm){
+    return res.json({farms:existingFarm,status:true})
+    }else{
+      return res.json({status:false})
+    }
   } catch (error) {
     console.log(error);
     return res.json({

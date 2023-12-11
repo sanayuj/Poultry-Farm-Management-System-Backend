@@ -61,14 +61,12 @@ module.exports.login = async (req, res, next) => {
       const auth = await bcrypt.compare(password, customer.password);
       if (auth) {
         const token = createToken(customer._id);
-        return res
-          .status(200)
-          .json({
-            user: customer,
-            message: "authenticate successfully",
-            created: true,
-            token,
-          });
+        return res.status(200).json({
+          user: customer,
+          message: "authenticate successfully",
+          created: true,
+          token,
+        });
       } else {
         return res.json({ message: "Incorrect Password", created: false });
       }
@@ -92,6 +90,9 @@ module.exports.userHeader = async (req, res, next) => {
 };
 
 module.exports.addFarm = async (req, res, next) => {
+  console.log("backend Called to add farm!!");
+  const userId = req.params.userId;
+  console.log(userId, "ADD farm Id");
   const {
     farmname,
     licenceId,
@@ -101,37 +102,60 @@ module.exports.addFarm = async (req, res, next) => {
     country,
     post,
     poultryPopulation,
-    userId
   } = req.body;
 
   try {
-    const existTrue = await farm.findOne({ licenceID: licenceId });
-    if (existTrue) {
+    const existingFarm = await farm.findOne({ licenceID: licenceId });
+
+    if (existingFarm) {
       return res.json({
-        message: "Farm Details already Exists",
+        message: "Farm with this licence ID already exists",
         status: false,
       });
     }
-    const newFarm=new farm({
-      farmName:farmname,
-      licenceID:licenceId,
-      phoneNumber:phonenumber,
-      address:address,
-      state:state,
-      country:country,
-      post:post,
-      poultryPopulation:poultryPopulation,
-      userId:userId
-    })
-    await newFarm.save().then(()=>{
-      res.json({message:"Farm details added successfully",status:true})
-    }).catch((error)=>{
-      res.json({message:"Course added Failed",status:false})
-    })
+
+    const newFarm = new farm({
+      ownerId: userId,
+      farmName: farmname,
+      licenceID: licenceId,
+      phoneNumber: phonenumber,
+      address: address,
+      state: state,
+      country: country,
+      post: post,
+      poultryPopulation: poultryPopulation,
+    });
+
+    await newFarm
+      .save()
+      .then(() => {
+        res.json({
+          message: "Farm details submited successfully",
+          status: true,
+        });
+      })
+      .catch((error) => {
+        res.json({ message: "Unable to submit farm details", status: false });
+      });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      message: "Internal server error in add farm",
+      status: false,
+    });
+  }
+};
+
+module.exports.showUserFarms = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    console.log(userId, "PARAMS ID");
+    const existingFarm = await farm.findOne({ userId: userId });
+    console.log(existingFarm);
   } catch (error) {
     console.log(error);
     return res.json({
-      message: "Internal server error in add farm",
+      message: "Internal server error in show their farms",
       status: false,
     });
   }

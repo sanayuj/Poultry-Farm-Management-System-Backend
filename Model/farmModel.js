@@ -1,5 +1,6 @@
-const mongoose=require("mongoose")
-const User =require("../Model/userModel")
+const mongoose = require("mongoose");
+const User = require("../Model/userModel");
+
 
 const farmDetailSchema = new mongoose.Schema({
     farmName: { type: String, required: true },
@@ -10,7 +11,7 @@ const farmDetailSchema = new mongoose.Schema({
     country: { type: String, required: true },
     post: { type: String, required: true },
     poultryPopulation: { type: Number, required: true },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   });
   
 module.exports=new mongoose.model("farmDetails",farmDetailSchema)

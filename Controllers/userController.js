@@ -1,6 +1,7 @@
 const { json, response } = require("express");
 const user = require("../Model/userModel");
 const farm = require("../Model/farmModel");
+const feedModel = require("../Model/feedModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const maxAge = 3 * 24 * 60 * 60;
@@ -15,8 +16,6 @@ const createToken = (id) => {
 
 module.exports.signup = async (req, res, next) => {
   const { firstname, phoneNumber, email, password, conformPassword } = req.body;
-  console.log(firstname, "Name!!!!");
-
   try {
     const existTrue = await user.findOne({ phoneNumber: phoneNumber });
     if (existTrue) {
@@ -149,12 +148,11 @@ module.exports.addFarm = async (req, res, next) => {
 module.exports.showUserFarms = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    console.log(userId, "PARAMS ID");
     const existingFarm = await farm.find({ userId: userId });
-    if(existingFarm){
-    return res.json({farms:existingFarm,status:true})
-    }else{
-      return res.json({status:false})
+    if (existingFarm) {
+      return res.json({ farms: existingFarm, status: true });
+    } else {
+      return res.json({ status: false });
     }
   } catch (error) {
     console.log(error);
@@ -165,13 +163,56 @@ module.exports.showUserFarms = async (req, res, next) => {
   }
 };
 
+module.exports.addFeed = async (req, res, next) => {
+  const { recived, consumed, farmId } = req.body; 
+  const userId = req.params.userId;
+  console.log(userId, "backend Add Feed User id");
+  console.log(recived, "received VALUES");
+  console.log(consumed, "consumed VALUES");
+  console.log(farmId, "FARM ID");
 
-module.exports.addFeed=async(req,res,next)=>{
-try{
+  try {
+    const newFeed = new feedModel({
+      qtyReceived: recived, 
+      qtyConsumed: consumed,
+      ownerId: userId,
+      farmId: farmId,
+    });
+
+    await newFeed.save();
+    res.json({
+      message: "Feed Details submitted successfully",
+      status: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.json({
+      message: "Unable to submit Feed Details",
+      status: false,
+    });
+  }
+};
 
 
-}catch(error){
-console.log(error)
-return res.json({message:"Internal server error in adding feed data",status:false})
-}
-}
+module.exports.getFeedDetails = async (req, res, next) => {
+  const userId = req.query.farmId;
+  const farmId = req.params.userId;
+  console.log(userId, "getFeedDetailsc");
+  console.log(farmId, "FFFFAAAARRRMMM ID");
+  try {
+    const existUser = await feedModel.findOne({ ownerId: userId });
+    if (existUser) {
+      const feedDetails = await feedModel.find({ ownerId: userId, farmId: farmId }); 
+      if (feedDetails) {
+        return res.json({ data: feedDetails, message: "Feed data fetched!", status: true });
+      } else {
+        return res.json({ message: "No feed records for the specified farm", status: false });
+      }
+    } else {
+      return res.json({ message: "User not found", status: false });
+    }
+  } catch (error) {
+    res.json({ message: "Internal server error in fetch feed details", status: false });
+  }
+};
+

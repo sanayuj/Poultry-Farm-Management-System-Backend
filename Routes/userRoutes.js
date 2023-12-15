@@ -1,5 +1,5 @@
 const express=require("express")
-const {signup,login, userHeader,addFarm,showUserFarms,addFeed,getFeedDetails,addMedicine,getMedicineDetails,addMortality,getMortalityDetails} =require('../Controllers/userController')
+const {signup,login, userHeader,addFarm,showUserFarms,addFeed,getFeedDetails,addMedicine,getMedicineDetails,addMortality,getMortalityDetails,addUserIssue} =require('../Controllers/userController')
 const router=express.Router()
 const cors = require('cors');
 const userAuth=require("../Middleware/userAuth")
@@ -11,6 +11,7 @@ router.post('/addfarm/:userId',addFarm)
 router.post('/addfeed/:userId',addFeed)
 router.post('/addmedicine/:userId',addMedicine)
 router.post('/addmortality/:userId',addMortality)
+router.post('/helpAndSupport/:userId',addUserIssue)
 
 
 

@@ -4,6 +4,7 @@ const farm = require("../Model/farmModel");
 const feedModel = require("../Model/feedModel");
 const medicineModel = require("../Model/medicineModel");
 const mortalityModel = require("../Model/mortalityModel");
+const userFeedbackModel = require("../Model/userFeedbackModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const maxAge = 3 * 24 * 60 * 60;
@@ -318,11 +319,10 @@ module.exports.addMortality = async (req, res, next) => {
   }
 };
 
-
-module.exports.getMortalityDetails=async(req,res,next)=>{
+module.exports.getMortalityDetails = async (req, res, next) => {
   const farmId = req.query.farmId;
   const userId = req.params.userId;
-  try{
+  try {
     const existingUser = await mortalityModel.find({ userId: userId });
     if (existingUser) {
       const mortalityDetails = await mortalityModel.find({ farmId: farmId });
@@ -337,8 +337,33 @@ module.exports.getMortalityDetails=async(req,res,next)=>{
     } else {
       return res.json({ message: "User not found", status: false });
     }
-  }catch(error){
-    console.log(error)
-    return res.json({message:"Internal server error in fetch mortality details",status:false})
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      message: "Internal server error in fetch mortality details",
+      status: false,
+    });
   }
-}
+};
+
+module.exports.addUserIssue = async (req, res, next) => {
+  const userId = req.params.userId;
+  const { issue, issueDetails } = req.body;
+  try {
+    const userFeedback = new userFeedbackModel({
+      ownerId: userId,
+      issue: issue,
+      issueInDetail: issueDetails,
+    });
+    await userFeedback.save().then(()=>{
+      res.json({message:"Data submitted successfully",status:true})
+    }).catch((error)=>{
+      res.json({message:"Unable to submit details",status:false})
+    })
+  } catch (error) {
+    res.json({
+      message: "Internal server error in Add user issue",
+      status: false,
+    });
+  }
+};

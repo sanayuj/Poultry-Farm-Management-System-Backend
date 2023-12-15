@@ -317,3 +317,28 @@ module.exports.addMortality = async (req, res, next) => {
     });
   }
 };
+
+
+module.exports.getMortalityDetails=async(req,res,next)=>{
+  const farmId = req.query.farmId;
+  const userId = req.params.userId;
+  try{
+    const existingUser = await mortalityModel.find({ userId: userId });
+    if (existingUser) {
+      const mortalityDetails = await mortalityModel.find({ farmId: farmId });
+      if (mortalityDetails) {
+        return res.json({ data: mortalityDetails, status: true });
+      } else {
+        return res.json({
+          message: "Unable to fetch medicine details",
+          status: false,
+        });
+      }
+    } else {
+      return res.json({ message: "User not found", status: false });
+    }
+  }catch(error){
+    console.log(error)
+    return res.json({message:"Internal server error in fetch mortality details",status:false})
+  }
+}

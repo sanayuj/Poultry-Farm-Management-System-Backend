@@ -3,6 +3,7 @@ const user = require("../Model/userModel");
 const farm = require("../Model/farmModel");
 const feedModel = require("../Model/feedModel");
 const medicineModel = require("../Model/medicineModel");
+const mortalityModel = require("../Model/mortalityModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const maxAge = 3 * 24 * 60 * 60;
@@ -224,7 +225,6 @@ module.exports.addMedicine = async (req, res, next) => {
   const userId = req.params.userId;
   const { date, dateOfVaccination, quantity, medicineName, farmId } = req.body;
   try {
-    console.log(req.body)
     const newMedicine = new medicineModel({
       date: date,
       dateOfVaccination: dateOfVaccination,
@@ -233,13 +233,21 @@ module.exports.addMedicine = async (req, res, next) => {
       ownerId: userId,
       farmId: farmId,
     });
-    await newMedicine.save().then(()=>{
-      res.json({message:"Medicine details submitted successfully",status:true})
-    }).catch((error)=>{
-      console.log(error)
-      res.json({message:"Internal server error in add medicine details",status:false})
-    })
-
+    await newMedicine
+      .save()
+      .then(() => {
+        res.json({
+          message: "Medicine details submitted successfully",
+          status: true,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.json({
+          message: "Internal server error in add medicine details",
+          status: false,
+        });
+      });
   } catch (error) {
     console.log(error);
     return res.json({
@@ -249,24 +257,63 @@ module.exports.addMedicine = async (req, res, next) => {
   }
 };
 
-
-module.exports.getMedicineDetails=async(req,res,next)=>{
+module.exports.getMedicineDetails = async (req, res, next) => {
   const farmId = req.query.farmId;
-  const userId  = req.params.userId;
-  try{
+  const userId = req.params.userId;
+  try {
     const existingUser = await medicineModel.find({ userId: userId });
     if (existingUser) {
-      const medicineDetails=await medicineModel.find({farmId:farmId})
-      if(medicineDetails){
-        return res.json({data:medicineDetails,status:true})
-      }else{
-        return res.json({message:"Unable to fetch medicine details",status:false})
+      const medicineDetails = await medicineModel.find({ farmId: farmId });
+      if (medicineDetails) {
+        return res.json({ data: medicineDetails, status: true });
+      } else {
+        return res.json({
+          message: "Unable to fetch medicine details",
+          status: false,
+        });
       }
-    }else{
-      return res.json({message:"User not found",status:false})
+    } else {
+      return res.json({ message: "User not found", status: false });
     }
-  }catch(error){
-    console.log(error)
-    res.json({message:"Internal server in get medicine details",status:false})
+  } catch (error) {
+    console.log(error);
+    res.json({
+      message: "Internal server in get medicine details",
+      status: false,
+    });
   }
-}
+};
+
+module.exports.addMortality = async (req, res, next) => {
+  const userId = req.params.userId;
+  const { date, noOfMortality, farmId } = req.body;
+  try {
+    const mortalityDetails = new mortalityModel({
+      date: date,
+      noOfMortality: noOfMortality,
+      ownerId: userId,
+      farmId: farmId,
+    });
+
+    await mortalityDetails
+      .save()
+      .then(() => {
+        return res.json({
+          message: "Mortality details submitted successfully",
+          status: true,
+        });
+      })
+      .catch((error) => {
+        return res.json({
+          message: "Unable to submit mortality values",
+          status: false,
+        });
+      });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      message: "Internal server error in add mortality",
+      status: false,
+    });
+  }
+};

@@ -2,6 +2,7 @@ const { json, response } = require("express");
 const user = require("../Model/userModel");
 const farm = require("../Model/farmModel");
 const feedModel = require("../Model/feedModel");
+const medicineModel = require("../Model/medicineModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const maxAge = 3 * 24 * 60 * 60;
@@ -89,9 +90,7 @@ module.exports.userHeader = async (req, res, next) => {
 };
 
 module.exports.addFarm = async (req, res, next) => {
-  console.log("backend Called to add farm!!");
   const userId = req.params.userId;
-  console.log(userId, "ADD farm Id");
   const {
     farmname,
     licenceId,
@@ -164,16 +163,11 @@ module.exports.showUserFarms = async (req, res, next) => {
 };
 
 module.exports.addFeed = async (req, res, next) => {
-  const { recived, consumed, farmId } = req.body; 
+  const { recived, consumed, farmId } = req.body;
   const userId = req.params.userId;
-  console.log(userId, "backend Add Feed User id");
-  console.log(recived, "received VALUES");
-  console.log(consumed, "consumed VALUES");
-  console.log(farmId, "FARM ID");
-
   try {
     const newFeed = new feedModel({
-      qtyReceived: recived, 
+      qtyReceived: recived,
       qtyConsumed: consumed,
       ownerId: userId,
       farmId: farmId,
@@ -193,26 +187,86 @@ module.exports.addFeed = async (req, res, next) => {
   }
 };
 
-
 module.exports.getFeedDetails = async (req, res, next) => {
   const userId = req.query.farmId;
   const farmId = req.params.userId;
-  console.log(userId, "getFeedDetailsc");
-  console.log(farmId, "FFFFAAAARRRMMM ID");
   try {
     const existUser = await feedModel.findOne({ ownerId: userId });
     if (existUser) {
-      const feedDetails = await feedModel.find({ ownerId: userId, farmId: farmId }); 
+      const feedDetails = await feedModel.find({
+        ownerId: userId,
+        farmId: farmId,
+      });
       if (feedDetails) {
-        return res.json({ data: feedDetails, message: "Feed data fetched!", status: true });
+        return res.json({
+          data: feedDetails,
+          message: "Feed data fetched!",
+          status: true,
+        });
       } else {
-        return res.json({ message: "No feed records for the specified farm", status: false });
+        return res.json({
+          message: "No feed records for the specified farm",
+          status: false,
+        });
       }
     } else {
       return res.json({ message: "User not found", status: false });
     }
   } catch (error) {
-    res.json({ message: "Internal server error in fetch feed details", status: false });
+    res.json({
+      message: "Internal server error in fetch feed details",
+      status: false,
+    });
   }
 };
 
+module.exports.addMedicine = async (req, res, next) => {
+  const userId = req.params.userId;
+  const { date, dateOfVaccination, quantity, medicineName, farmId } = req.body;
+  try {
+    console.log(req.body)
+    const newMedicine = new medicineModel({
+      date: date,
+      dateOfVaccination: dateOfVaccination,
+      Quantity: quantity,
+      medicineName: medicineName,
+      ownerId: userId,
+      farmId: farmId,
+    });
+    await newMedicine.save().then(()=>{
+      res.json({message:"Medicine details submitted successfully",status:true})
+    }).catch((error)=>{
+      console.log(error)
+      res.json({message:"Internal server error in add medicine details",status:false})
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      message: "Internal server error in add medicine",
+      status: false,
+    });
+  }
+};
+
+
+module.exports.getMedicineDetails=async(req,res,next)=>{
+  const farmId = req.query.farmId;
+  const userId  = req.params.userId;
+  try{
+    const existingUser = await medicineModel.find({ userId: userId });
+    if (existingUser) {
+      const medicineDetails=await medicineModel.find({farmId:farmId})
+      if(medicineDetails){
+        return res.json({data:medicineDetails,status:true})
+      }else{
+        return res.json({message:"Unable to fetch medicine details",status:false})
+      }
+    }else{
+      return res.json({message:"User not found",status:false})
+    }
+  }catch(error){
+    console.log(error)
+    res.json({message:"Internal server in get medicine details",status:false})
+  }
+}

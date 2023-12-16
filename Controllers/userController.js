@@ -147,9 +147,10 @@ module.exports.addFarm = async (req, res, next) => {
 };
 
 module.exports.showUserFarms = async (req, res, next) => {
+  console.log("showUserFarms CONTROLLER!!!")
   try {
     const userId = req.params.userId;
-    const existingFarm = await farm.find({ userId: userId });
+    const existingFarm = await farm.find({ ownerId: userId });
     if (existingFarm) {
       return res.json({ farms: existingFarm, status: true });
     } else {

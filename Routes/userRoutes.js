@@ -7,21 +7,21 @@ const userAuth=require("../Middleware/userAuth")
 //POST
 router.post('/signup', signup);
 router.post('/login',login)
-router.post('/addfarm/:userId',addFarm)
-router.post('/addfeed/:userId',addFeed)
-router.post('/addmedicine/:userId',addMedicine)
-router.post('/addmortality/:userId',addMortality)
-router.post('/helpAndSupport/:userId',addUserIssue)
+router.post('/addfarm/:userId',userAuth,addFarm)
+router.post('/addfeed/:userId',userAuth,addFeed)
+router.post('/addmedicine/:userId',userAuth,addMedicine)
+router.post('/addmortality/:userId',userAuth,addMortality)
+router.post('/helpAndSupport/:userId',userAuth,addUserIssue)
 
 
 
 
 //GET 
 router.get('/',userAuth,userHeader)
-router.get('/showuserfarms/:userId',showUserFarms)
-router.get('/feedDetails/:userId',getFeedDetails)
-router.get('/medicineDetails/:userId',getMedicineDetails)
-router.get('/mortalityDetails/:userId',getMortalityDetails)
+router.get('/showuserfarms/:userId',userAuth,showUserFarms)
+router.get('/feedDetails/:userId',userAuth,getFeedDetails)
+router.get('/medicineDetails/:userId',userAuth,getMedicineDetails)
+router.get('/mortalityDetails/:userId',userAuth,getMortalityDetails)
 
 
 

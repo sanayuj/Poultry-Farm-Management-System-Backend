@@ -11,6 +11,7 @@ const farmDetailSchema = new mongoose.Schema({
     country: { type: String, required: true },
     post: { type: String, required: true },
     poultryPopulation: { type: Number, required: true },
+    balancePopulation: { type: Number, required: true },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   });
   

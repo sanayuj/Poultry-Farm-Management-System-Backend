@@ -12,7 +12,7 @@ const mortalityDetailsSchema = new mongoose.Schema({
     required: true,
   },
   farmId: { type: mongoose.Schema.Types.ObjectId, ref: "Farm", required: true },
+  balanceCount:{ type: Number, required: true },
 });
 
-
-module.exports=mongoose.model("mortalityDetails",mortalityDetailsSchema)
+module.exports = mongoose.model("mortalityDetails", mortalityDetailsSchema);

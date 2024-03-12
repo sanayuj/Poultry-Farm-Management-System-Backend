@@ -124,6 +124,7 @@ module.exports.addFarm = async (req, res, next) => {
       country: country,
       post: post,
       poultryPopulation: poultryPopulation,
+      balancePopulation:poultryPopulation
     });
 
     await newFarm
@@ -168,10 +169,12 @@ module.exports.showUserFarms = async (req, res, next) => {
 module.exports.addFeed = async (req, res, next) => {
   const { recived, consumed, farmId } = req.body;
   const userId = req.params.userId;
+  const balanceBag=recived - consumed;
   try {
     const newFeed = new feedModel({
       qtyReceived: recived,
       qtyConsumed: consumed,
+      balance: balanceBag ,
       ownerId: userId,
       farmId: farmId,
     });
@@ -289,13 +292,20 @@ module.exports.getMedicineDetails = async (req, res, next) => {
 module.exports.addMortality = async (req, res, next) => {
   const userId = req.params.userId;
   const { date, noOfMortality, farmId } = req.body;
+
   try {
+
+    const farmDetails=await farm.findById(farmId)
+      const currentBalance=farmDetails.balancePopulation
+
     const mortalityDetails = new mortalityModel({
       date: date,
       noOfMortality: noOfMortality,
       ownerId: userId,
       farmId: farmId,
+      balanceCount:currentBalance
     });
+   
 
     await mortalityDetails
       .save()
@@ -305,12 +315,15 @@ module.exports.addMortality = async (req, res, next) => {
           status: true,
         });
       })
+     
+
       .catch((error) => {
         return res.json({
           message: "Unable to submit mortality values",
           status: false,
         });
       });
+      await farm.findByIdAndUpdate(farmId, { $inc: { balancePopulation: -noOfMortality } })
   } catch (error) {
     console.log(error);
     res.json({

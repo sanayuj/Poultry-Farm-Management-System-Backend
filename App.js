@@ -12,9 +12,7 @@ const AdminRoutes=require("./Routes/adminRoutes")
 dbConnection.dbConnect();
 
 //CORS
-app.use(
-  cors()
-);
+app.use(cors());
 
 app.use(logger("dev"));
 app.use(express.json());

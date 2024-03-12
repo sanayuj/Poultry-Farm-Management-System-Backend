@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../Model/userModel");
 
 const admin = require("../Model/adminModel");
+const userFeedbackModel = require("../Model/userFeedbackModel");
 const maxAge = 3 * 24 * 60 * 60;
 require("dotenv").config();
 
@@ -23,7 +24,7 @@ module.exports.adminLogin = async (req, res, next) => {
         const token = createAdminToken(adminData._id);
         return res
           .status(200)
-          .json({ message: "Authentication successfull", status: true, token });
+          .json({ message: "Authentication successfull", status: true, token ,admin:adminData });
       } else {
         return res.json({ message: "Incorrect Password", status: false });
       }
@@ -87,3 +88,20 @@ module.exports.disableUser = async (req, res, next) => {
     });
   }
 };
+
+
+module.exports.getFeedback=async (req,res,next)=>{
+  try {
+    const userId = req.params.userId;
+    const feedback=await userFeedbackModel.find({ownerId:userId})
+    console.log(feedback,"$$$");
+    if(feedback){
+      res.json({status:true,data:feedback})
+    }else{
+      res.json({status:false})
+    }
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
